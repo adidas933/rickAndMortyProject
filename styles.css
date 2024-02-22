@@ -6,3 +6,23 @@ body {
 ul {
   list-style-type: none;
 }
+
+.characterImg {
+  width: 33px;
+}
+
+.characterImg:hover {
+  cursor: pointer;
+}
+
+.episodesOl li {
+  font-size: 18px;
+  margin: 10px 0;
+}
+
+
+
+.episodeName {
+  font-size: 35px;
+  font-weight: 600;
+}
