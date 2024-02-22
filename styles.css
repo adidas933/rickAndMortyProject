@@ -1,3 +1,8 @@
 body {
-  background-color: rgb(117, 117, 117);
+  background-color: rgb(52, 52, 52);
+  color: lightgrey;
+}
+
+ul {
+  list-style-type: none;
 }
