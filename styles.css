@@ -1,6 +1,7 @@
 body {
   background-color: rgb(52, 52, 52);
   color: lightgrey;
+  transition: all ease 0.3;
 }
 
 ul {
@@ -20,9 +21,14 @@ ul {
   margin: 10px 0;
 }
 
-
-
 .episodeName {
   font-size: 35px;
   font-weight: 600;
+}
+
+.characterListOpensUp {
+  position: absolute;
+  background-color: rgb(0, 0, 0, 0.9);
+  transition: all 0.3s ease;
+  z-index: 1;
 }
