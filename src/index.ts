@@ -16,70 +16,7 @@ interface EpisodesData {
   air_date: string,
   episode: string
 }
-
-// function createDataTable(className: string, whatData:EpisodesData[] | Episode[]) {
-//   $(className).DataTable({
-//     data: whatData,
-//     columns: [
-//       { data: "id", title: "ID" },
-//       { data: "name", title: "Name" },
-//       { data: "air_date", title: "Air Date" },
-//       { data: "episode", title: "Episode" },
-//       // { data: "url", title: "URL" },
-//       // { data: "created", title: "Created" },
-//       {
-//         title: 'Characters',
-//         defaultContent: '<button class="expand-btn">Show Characters</button> <div class="characterListOpensUp">asdasd</div>',
-//       },
-//     ],
-//   })
-  
-//   $(className).on('click', '.expand-btn', function () {
-//     const table = $(className).DataTable();
-//     const closestRow = $(this).closest('tr');
-//     const rowData = table.row(closestRow).data();
-//     console.log(rowData);
-//     closestRow.find('.characterListOpensUp').css('opacity', 1);
-//   });
-// }
-
-// function getCharacters(ol: any, characterData: Character, i: number) {
-//   const ul = $('<ul>');
-//   ol.append(ul);
-//   const charImg = (`<img class="characterImg" src="${characterData.image}">`);
-//   ul.append(`<li><strong>${i + 1} </strong> ${charImg} ${characterData.name} ${characterData.id}</li>`);
-// }
-
-// function getEpisodes(API:string) {
-//   $.ajax({
-//     url: API,
-//     dataType: 'json',
-//     success: function (data) {
-//       console.log(data.results);
-//       const episodesData = data.results;
-//       createDataTable('.allEpisodesTable', episodesData);
-//       const onlyAbove12 = episodesData.filter((episode:Episode) => {
-//         return episode.characters.length > 12;
-//       })
-//       console.log(onlyAbove12);
-//       createDataTable('.above12Table', onlyAbove12);
-
-//       onlyAbove12.forEach((episode:Episode, index:number) => {
-//       const ol = $(`<ol class="episodesOl"><p class="episodeName">${index + 1}. Episode "${episode.name}":<p/></ol>`);
-//       $('.listOfCharacters').append(ol);
-//       for (let i = 0; i < episode.characters.length; i++) {
-//         $.ajax({
-//           url: (episode.characters)[i],
-//           dataType: 'json',
-//           success: function (characterData) { getCharacters(ol, characterData, i) }
-//         })
-//       }
-//     });
-//    }
-//  })
-// }
-// getEpisodes('https://rickandmortyapi.com/api/episode');
-
+let isListOpened = false;
 function createDataTable(className: string, whatData: EpisodesData[] | Episode[]) {
   const table = $(className).DataTable({
     data: whatData,
@@ -90,58 +27,27 @@ function createDataTable(className: string, whatData: EpisodesData[] | Episode[]
       { data: "episode", title: "Episode" },
       {
         title: 'Characters',
+        // characters hidden.
         render: function () {
-          return '<button class="expand-btn">Show Characters</button> <div class="characterListOpensUp" style="display:none;"></div>';
+          return `<button class="expand-btn">Show Characters</button> <div class="characterListOpensUp"></div>`;
         },
       },
     ],
   });
-
-  $(className).on('mouseover', '.expand-btn', function () {
+  // hover - show characters (.closest - get father | .find - get child)
+  $(className).on('mouseenter mouseleave','.characterListOpensUp, .expand-btn', function () {
     const closestRow = $(this).closest('tr');
     const characterDiv = closestRow.find('.characterListOpensUp');
-
-    // Toggle visibility only for the clicked button's associated character div
-    characterDiv.toggle();
-
-    if (characterDiv.is(':visible')) {
-      const rowData = table.row(closestRow).data();
-      getCharacters(characterDiv, rowData);
+    if ($(this).hasClass('expand-btn') && !isListOpened) {
+      getCharacters(characterDiv, table.row(closestRow).data());
+      isListOpened = true;
+      characterDiv.html('');
+    } else {
+      isListOpened = false;
     }
-    $(className).on('mouseenter', '.expand-btn, .characterListOpensUp', function () {
-      const closestRow = $(this).closest('tr');
-      const characterDiv = closestRow.find('.characterListOpensUp');
-      
-      // Show the character list when hovering over the button or character list
-      characterDiv.show();
-    });
-  
-    $(className).on('mouseleave', '.expand-btn, .characterListOpensUp', function () {
-      const closestRow = $(this).closest('tr');
-      const characterDiv = closestRow.find('.characterListOpensUp');
-      
-      // Hide the character list when leaving the button or character list
-      characterDiv.hide();
-    });
+    characterDiv.toggle();
   });
 }
-
-function getCharacters(ol: any, rowData: Episode[] | any) {
-  ol.empty(); // Clear existing content
-  for (let i = 0; i < rowData.characters.length; i++) {
-    $.ajax({
-      url: rowData.characters[i],
-      dataType: 'json',
-      success: function (characterData) {
-        const ul = $('<ul>');
-        ol.append(ul);
-        const charImg = `<img class="characterImg" src="${characterData.image}">`;
-        ul.append(`<li><strong>${i + 1}</strong> ${charImg} ${characterData.name} ${characterData.id}</li>`);
-      },
-    });
-  }
-}
-
 function getEpisodes(API:string) {
   $.ajax({
     url: API,
@@ -158,7 +64,22 @@ function getEpisodes(API:string) {
     }
   });
 }
+function getCharacters(ol: any, rowData: Episode[] | any) {
 
+    for (let i = 0; i < rowData.characters.length; i++) {
+      $.ajax({
+        url: rowData.characters[i],
+        dataType: 'json',
+        success: function (characterData) {
+          const ul = $('<ul>');
+
+            ol.append(ul);
+            const charImg = `<img class="characterImg" src="${characterData.image}">`;
+            ul.append(`<li><strong>${i + 1}</strong> ${charImg} ${characterData.name} (${characterData.status})</li>`);
+        },
+      });
+    }
+}
 getEpisodes('https://rickandmortyapi.com/api/episode');
 
 
