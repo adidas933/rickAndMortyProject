@@ -28,10 +28,12 @@ ul {
 
 .characterListOpensUp {
   position: absolute;
-  background-color: rgb(0, 0, 0, 0.9);
+  background-color: rgb(0, 0, 0, 0.8);
   transition: all 0.3s ease;
   z-index: 1;
   display: none;
   margin: auto;
   border: 2px solid white;
+  overflow: hidden;
 }
+
